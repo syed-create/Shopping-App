@@ -1,33 +1,72 @@
 import React from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import Colors from "../../constants/Colors";
+import CartItem from "../../components/shop/CartItem";
+
 import {
     makeSelectCartData,
     makeSelectCartTotalAmount,
 } from "../../store/selectors/cartSelector";
+import actionFunction from "../../store/actions/actions";
+import { DELETE_ITEM } from "../../store/constants/cartConstants";
 
 const ProductsCartScreen = props => {
-    // console.log("props cart total amount", props.cartDataTotalAmount);
-    // console.log("cartData", props.cartData);
+    const { cartDataTotalAmount: totalAmount, cartData } = props;
+    const transformedCartItem = [];
+    for (const key in cartData) {
+        transformedCartItem.push({
+            id: key,
+            productTitle: cartData[key].productTitle,
+            productPrice: cartData[key].productPrice,
+            productQuantity: cartData[key].quantity,
+            productSum: cartData[key].sum,
+        });
+    }
+
+    const renderCartItemList = itemData => {
+        return (
+            // <View key={itemData.item.productId} style={styles.cardCont}>
+            //     <Text style={styles.textN}>
+            //         <Text>{itemData.item.productTitle}</Text>
+            //         <Text> x {itemData.item.productQuantity}</Text>
+            //     </Text>
+            //     <Text style={styles.textN}>{itemData.item.productPrice}</Text>
+            // </View>
+            <CartItem
+                total={itemData.item.productSum}
+                title={itemData.item.productTitle}
+                quantity={itemData.item.productQuantity}
+                onDelete={() => {
+                    props.removeItem({id: itemData.item.id, amount: itemData.item.productSum});
+                }}
+            />
+        );
+    };
     return (
         <View style={styles.container}>
             <View style={styles.cardCont}>
                 <Text style={styles.textCont}>
                     <Text style={styles.total}>Total: </Text>
-                    <Text style={styles.amount}>
-                        ${props.cartDataTotalAmount}
-                    </Text>
+                    <Text style={styles.amount}>${totalAmount.toFixed(2)}</Text>
                 </Text>
                 <Button
                     title="Order Now"
                     color={Colors.secondaryColor}
-                    disabled={props.cartDataTotalAmount === 0 && true}
+                    disabled={transformedCartItem.length === 0 && true}
                 />
             </View>
             <View>
-                <Text>Cart Items</Text>
+                {/* <View style={styles.flexRowBetween}>
+                    <Text style={styles.textB}>Cart Items</Text>
+                    <Text style={styles.textB}>Amount</Text>
+                </View> */}
+                <FlatList
+                    data={transformedCartItem}
+                    renderItem={renderCartItemList}
+                />
             </View>
         </View>
     );
@@ -54,12 +93,29 @@ const styles = StyleSheet.create({
         fontFamily: "open-sans-bold",
         fontSize: 20,
     },
+    textB: {
+        fontFamily: "open-sans-bold",
+        fontSize: 16,
+    },
+    textN: {
+        fontFamily: "open-sans",
+        fontSize: 15,
+    },
     total: {},
     amount: { color: Colors.primaryColor },
+    flexRowBetween: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 10,
+    },
+    // spaceBetween: { justifyContent: "space-between" },,
 });
 const mapStateToProps = createStructuredSelector({
     cartData: makeSelectCartData(),
     cartDataTotalAmount: makeSelectCartTotalAmount(),
 });
-const mapDispatchToProps = (dispatch = {});
+const mapDispatchToProps = dispatch => ({
+    removeItem: (...payload) =>
+        dispatch(actionFunction(DELETE_ITEM, ...payload)),
+});
 export default connect(mapStateToProps, mapDispatchToProps)(ProductsCartScreen);

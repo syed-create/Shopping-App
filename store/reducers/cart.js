@@ -1,5 +1,5 @@
 import CartItem from "../../models/cart-item";
-import { ADD_TO_CART } from "../constants/cartConstants";
+import { ADD_TO_CART, DELETE_ITEM } from "../constants/cartConstants";
 
 export const initialState = {
     items: {},
@@ -34,6 +34,18 @@ const CartReducer = (state = initialState, action) => {
                 ...state,
                 items: { ...state.items, [product.id]: cartItem },
                 totalAmount: state.totalAmount + productPrice,
+            };
+        case DELETE_ITEM:
+            
+            const deletItemKey = action.payload.id;
+            const updatedProducts = { ...state.items };
+            delete updatedProducts[deletItemKey];
+            const amount = action.payload.amount;
+
+            return {
+                ...state,
+                items: updatedProducts,
+                totalAmount: state.totalAmount - amount,
             };
         default:
             return state;
