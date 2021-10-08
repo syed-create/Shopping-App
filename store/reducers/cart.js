@@ -9,10 +9,11 @@ export const initialState = {
 const CartReducer = (state = initialState, action) => {
     switch (action.type) {
         case ADD_TO_CART:
-            const product = action.payload.product;
+            const product = action.payload;
             const productTitle = product.title;
             const productPrice = product.price;
             let cartItem;
+            const id = product.id;
             if (state.items[product.id]) {
                 cartItem = new CartItem(
                     state.items[product.id].quantity + 1,
@@ -28,14 +29,14 @@ const CartReducer = (state = initialState, action) => {
                     productPrice
                 );
             }
+
             return {
                 ...state,
                 items: { ...state.items, [product.id]: cartItem },
-                totalAmount: state.totalAmount + productPrice
+                totalAmount: state.totalAmount + productPrice,
             };
+        default:
+            return state;
     }
-    return {
-        state,
-    };
 };
 export default CartReducer;

@@ -47,13 +47,6 @@ function ProductNavigator() {
                         component={ProductDetailsScreen}
                         options={({ route }) => ({
                             title: route.params.productTitle,
-                            headerRight: () => (
-                                <Button
-                                    onPress={() => alert("This is a button!")}
-                                    title="Info"
-                                    color="#fff"
-                                />
-                            ),
                         })}
                     />
                     <Stack.Screen name="Cart" component={ProductsCartScreen} />
