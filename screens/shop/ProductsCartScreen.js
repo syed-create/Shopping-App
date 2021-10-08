@@ -25,22 +25,19 @@ const ProductsCartScreen = props => {
             productSum: cartData[key].sum,
         });
     }
+    transformedCartItem.sort((a, b) => (a.id > b.id ? 1 : -1));
 
     const renderCartItemList = itemData => {
         return (
-            // <View key={itemData.item.productId} style={styles.cardCont}>
-            //     <Text style={styles.textN}>
-            //         <Text>{itemData.item.productTitle}</Text>
-            //         <Text> x {itemData.item.productQuantity}</Text>
-            //     </Text>
-            //     <Text style={styles.textN}>{itemData.item.productPrice}</Text>
-            // </View>
             <CartItem
                 total={itemData.item.productSum}
                 title={itemData.item.productTitle}
                 quantity={itemData.item.productQuantity}
                 onDelete={() => {
-                    props.removeItem({id: itemData.item.id, amount: itemData.item.productSum});
+                    props.removeItem({
+                        id: itemData.item.id,
+                        amount: itemData.item.productSum,
+                    });
                 }}
             />
         );
@@ -59,10 +56,6 @@ const ProductsCartScreen = props => {
                 />
             </View>
             <View>
-                {/* <View style={styles.flexRowBetween}>
-                    <Text style={styles.textB}>Cart Items</Text>
-                    <Text style={styles.textB}>Amount</Text>
-                </View> */}
                 <FlatList
                     data={transformedCartItem}
                     renderItem={renderCartItemList}

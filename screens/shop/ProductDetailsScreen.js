@@ -13,13 +13,28 @@ import Colors from "../../constants/Colors";
 import actionFunction from "../../store/actions/actions";
 import { makeSelectProductsData } from "../../store/selectors/productSelector";
 import * as CartConstants from "../../store/constants/cartConstants";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import CustomHeaderButton from "../../components/UI/HeaderButton";
 
 const ProductDetailsScreen = props => {
     const { productId } = props.route.params;
-
+    const { navigation } = props;
     const productDetails = props.productDetails.find(
         product => product.id === productId
     );
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+                    <Item
+                        title="Cart"
+                        iconName="md-cart"
+                        onPress={() => navigation.navigate("Cart")}
+                    />
+                </HeaderButtons>
+            ),
+        });
+    }, [navigation]);
     return (
         <ScrollView style={styles.container}>
             <Image
@@ -31,9 +46,7 @@ const ProductDetailsScreen = props => {
                     color={Colors.primaryColor}
                     title="Add To Cart"
                     onPress={() => {
-                        props.dispatchAddToCart({
-                            product: productDetails,
-                        });
+                        props.dispatchAddToCart(productDetails);
                     }}
                 />
             </View>
