@@ -35,18 +35,33 @@ const CartReducer = (state = initialState, action) => {
                 items: { ...state.items, [product.id]: cartItem },
                 totalAmount: state.totalAmount + productPrice,
             };
-        case DELETE_ITEM:
-            
-            const deletItemKey = action.payload.id;
-            const updatedProducts = { ...state.items };
-            delete updatedProducts[deletItemKey];
-            const amount = action.payload.amount;
 
+        case DELETE_ITEM:
+            const deletItemKey = action.payload.id;
+            const item = state.items[deletItemKey];
+
+            let updatedProducts;
+            if (item.quantity === 1) {
+                updatedProducts = { ...state.items };
+                delete updatedProducts[deletItemKey];
+            } else {
+                const updatedProduct = new CartItem(
+                    item.quantity - 1,
+                    item.productPrice,
+                    item.productTitle,
+                    item.sum - item.productPrice
+                );
+                updatedProducts = {
+                    ...state.items,
+                    [deletItemKey]: updatedProduct,
+                };
+            }
             return {
                 ...state,
                 items: updatedProducts,
-                totalAmount: state.totalAmount - amount,
+                totalAmount: state.totalAmount - item.productPrice,
             };
+
         default:
             return state;
     }
